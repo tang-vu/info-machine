@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import click
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
@@ -52,15 +54,17 @@ def _run_inspectors(names: list[str] | None = None) -> list:
     return results
 
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.version_option(version=__version__, prog_name="info-machine")
-def main():
+@click.pass_context
+def main(ctx):
     """🖥️ Info-Machine — PC/Laptop Hardware Inspector
 
     Inspect hardware specs, evaluate component health,
     and verify configurations against seller claims.
     """
-    pass
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(info)
 
 
 @main.command()
@@ -417,5 +421,26 @@ def _print_summary(name: str, data: dict, score: int) -> None:
         print_key_value("Health", health_bar(score))
 
 
+def _is_frozen() -> bool:
+    """Check if running as a PyInstaller bundled EXE."""
+    return getattr(sys, "frozen", False)
+
+
+def run():
+    """Entry point that pauses before exit when running as EXE."""
+    try:
+        main(standalone_mode=False)
+    except SystemExit:
+        pass
+    except Exception as e:
+        console.print(f"[red]Error: {e}[/red]")
+    finally:
+        if _is_frozen():
+            console.print(
+                "\n[dim]Press Enter to exit...[/dim]"
+            )
+            input()
+
+
 if __name__ == "__main__":
-    main()
+    run()

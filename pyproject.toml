@@ -45,7 +45,7 @@ dev = [
 ]
 
 [project.scripts]
-info-machine = "info_machine.cli:main"
+info-machine = "info_machine.cli:run"
 
 [project.urls]
 Homepage = "https://github.com/tang-vu/info-machine"
