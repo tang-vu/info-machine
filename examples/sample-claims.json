@@ -1,0 +1,8 @@
+{
+  "cpu": "Intel Core i7-12700H",
+  "ram": "16GB DDR5 4800MHz",
+  "storage": "512GB NVMe SSD",
+  "gpu": "NVIDIA GeForce RTX 3060 6GB",
+  "display": "1920x1080 144Hz",
+  "battery": "76Wh"
+}

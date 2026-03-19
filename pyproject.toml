@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "info-machine"
+version = "0.1.0"
+description = "🖥️ CLI tool to inspect PC/laptop hardware specs, evaluate component health, and verify seller claims"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Tang Vu", email = "tang-vu@users.noreply.github.com"}
+]
+keywords = ["hardware", "system-info", "cli", "pc-inspector", "health-check"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Hardware",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+    "psutil>=5.9",
+    "wmi>=1.5;sys_platform=='win32'",
+    "pywin32>=306;sys_platform=='win32'",
+    "GPUtil>=1.4",
+    "py-cpuinfo>=9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.3",
+    "black>=24.0",
+]
+
+[project.scripts]
+info-machine = "info_machine.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/tang-vu/info-machine"
+Repository = "https://github.com/tang-vu/info-machine"
+Issues = "https://github.com/tang-vu/info-machine/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"
