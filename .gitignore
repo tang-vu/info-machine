@@ -33,6 +33,9 @@ htmlcov/
 
 # Distribution
 *.tar.gz
+dist/
+build/
+*.spec
 
 # Reports (generated)
 reports/
