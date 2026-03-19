@@ -436,9 +436,7 @@ def run():
         console.print(f"[red]Error: {e}[/red]")
     finally:
         if _is_frozen():
-            console.print(
-                "\n[dim]Press Enter to exit...[/dim]"
-            )
+            console.print("\n[dim]Press Enter to exit...[/dim]")
             input()
 
 
