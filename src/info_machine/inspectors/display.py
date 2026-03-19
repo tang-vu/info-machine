@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from info_machine.core.inspector import BaseInspector, registry
-from info_machine.utils.system import is_windows, wmi_query, safe_int
+from info_machine.utils.system import is_windows, safe_int, wmi_query
 
 
 @registry.register

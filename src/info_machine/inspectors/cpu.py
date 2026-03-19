@@ -7,7 +7,7 @@ from typing import Any
 import psutil
 
 from info_machine.core.inspector import BaseInspector, registry
-from info_machine.utils.system import is_windows, wmi_query, safe_int, safe_float
+from info_machine.utils.system import is_windows, safe_int, wmi_query
 
 
 @registry.register
@@ -71,7 +71,7 @@ class CpuInspector(BaseInspector):
         try:
             temps = psutil.sensors_temperatures()
             if temps:
-                for name, entries in temps.items():
+                for _name, entries in temps.items():
                     if entries:
                         data["temperature_c"] = entries[0].current
                         break

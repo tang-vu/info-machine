@@ -80,7 +80,12 @@ class TestVerifier:
                 "name": "disk",
                 "data": {
                     "physical_disks": [
-                        {"model": "Samsung 980 Pro", "type": "NVMe SSD", "size_gb": 476.9, "size_readable": "476.9 GB"}
+                        {
+                            "model": "Samsung 980 Pro",
+                            "type": "NVMe SSD",
+                            "size_gb": 476.9,
+                            "size_readable": "476.9 GB",
+                        }
                     ]
                 },
             }

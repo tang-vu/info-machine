@@ -56,16 +56,16 @@ class MotherboardInspector(BaseInspector):
                 bios = bios_data[0]
                 data["bios_manufacturer"] = (bios.get("Manufacturer") or "Unknown").strip()
                 data["bios_name"] = (bios.get("Name") or "Unknown").strip()
-                data["bios_version"] = (bios.get("SMBIOSBIOSVersion") or bios.get("Version") or "Unknown").strip()
+                data["bios_version"] = (
+                    bios.get("SMBIOSBIOSVersion") or bios.get("Version") or "Unknown"
+                ).strip()
 
                 release = bios.get("ReleaseDate")
                 if release and len(str(release)) >= 8:
                     # WMI date format: YYYYMMDDHHMMSS.ffffff+***
                     date_str = str(release)[:8]
                     try:
-                        data["bios_date"] = (
-                            f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
-                        )
+                        data["bios_date"] = f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
                     except Exception:
                         data["bios_date"] = str(release)
 

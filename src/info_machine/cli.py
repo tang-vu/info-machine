@@ -8,12 +8,12 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from info_machine import __version__
 from info_machine.utils.formatting import (
     console,
-    print_header,
-    print_section,
-    print_key_value,
     create_table,
     health_bar,
     print_error,
+    print_header,
+    print_key_value,
+    print_section,
     print_success,
     print_warning,
 )
@@ -44,7 +44,7 @@ def _run_inspectors(names: list[str] | None = None) -> list:
 
         for inspector in inspectors:
             progress.update(task, description=f"Inspecting {inspector.display_name}...")
-            data = inspector.safe_collect()
+            inspector.safe_collect()
             result = inspector.to_dict()
             results.append(result)
             progress.advance(task)
@@ -65,9 +65,11 @@ def main():
 
 @main.command()
 @click.option(
-    "--component", "-c",
+    "--component",
+    "-c",
     multiple=True,
-    help="Specific component(s) to scan (cpu, ram, disk, gpu, display, battery, network, motherboard). Default: all.",
+    help="Specific component(s) to scan: cpu, ram, disk, gpu, display,"
+    " battery, network, motherboard. Default: all.",
 )
 @click.option("--json-output", "-j", is_flag=True, help="Output raw JSON data.")
 def scan(component: tuple[str, ...], json_output: bool):
@@ -81,7 +83,7 @@ def scan(component: tuple[str, ...], json_output: bool):
     results = _run_inspectors(names)
 
     if json_output:
-        console.print_json(json_mod.dumps([r for r in results], indent=2, default=str))
+        console.print_json(json_mod.dumps(list(results), indent=2, default=str))
         return
 
     for result in results:
@@ -118,7 +120,8 @@ def scan(component: tuple[str, ...], json_output: bool):
 
 @main.command()
 @click.option(
-    "--component", "-c",
+    "--component",
+    "-c",
     multiple=True,
     help="Specific component(s) to check. Default: all.",
 )
@@ -207,7 +210,7 @@ def verify(claims_file: str):
         claims = load_claims(claims_file)
     except Exception as e:
         print_error(f"Failed to load claims file: {e}")
-        raise SystemExit(1)
+        raise SystemExit(1) from e
 
     console.print(f"  [dim]Claims file:[/dim] {claims_file}")
     console.print(f"  [dim]Fields to verify:[/dim] {len(claims)}")
@@ -247,9 +250,11 @@ def verify(claims_file: str):
     console.print(table)
 
     # Summary
-    console.print(f"\n  ✅ Match: [bright_green]{match_count}[/bright_green]  |  "
-                  f"⚠️ Mismatch: [bright_red]{mismatch_count}[/bright_red]  |  "
-                  f"❓ Unknown: [dim]{unknown_count}[/dim]")
+    console.print(
+        f"\n  ✅ Match: [bright_green]{match_count}[/bright_green]  |  "
+        f"⚠️ Mismatch: [bright_red]{mismatch_count}[/bright_red]  |  "
+        f"❓ Unknown: [dim]{unknown_count}[/dim]"
+    )
 
     if mismatch_count > 0:
         console.print()
@@ -267,13 +272,18 @@ def verify(claims_file: str):
 
 @main.command()
 @click.option(
-    "--format", "-f",
+    "--format",
+    "-f",
     type=click.Choice(["json", "markdown", "html"], case_sensitive=False),
     default="json",
     help="Report format.",
 )
 @click.option("--output", "-o", type=click.Path(), help="Output file path.")
-@click.option("--claims", type=click.Path(exists=True), help="Optional claims file for verification.")
+@click.option(
+    "--claims",
+    type=click.Path(exists=True),
+    help="Optional claims file for verification.",
+)
 def report(format: str, output: str | None, claims: str | None):
     """📄 Generate a detailed system report.
 
@@ -356,7 +366,9 @@ def _print_summary(name: str, data: dict, score: int) -> None:
     """Print a concise summary for each inspector type."""
     if name == "cpu":
         print_key_value("Model", data.get("model", "Unknown"))
-        print_key_value("Cores", f"{data.get('physical_cores', '?')} physical / {data.get('logical_cores', '?')} logical")
+        cores = data.get("physical_cores", "?")
+        logical = data.get("logical_cores", "?")
+        print_key_value("Cores", f"{cores} physical / {logical} logical")
         freq = data.get("frequency_max_mhz") or data.get("frequency_current_mhz")
         if freq:
             print_key_value("Frequency", f"{freq} MHz")
@@ -367,7 +379,8 @@ def _print_summary(name: str, data: dict, score: int) -> None:
             print_key_value("Type", f"{data.get('type')} {data.get('speed_mhz', '')}MHz")
     elif name == "disk":
         for disk in data.get("physical_disks", []):
-            print_key_value("Drive", f"{disk['model']} ({disk['type']}, {disk.get('size_readable', 'N/A')})")
+            size = disk.get("size_readable", "N/A")
+            print_key_value("Drive", f"{disk['model']} ({disk['type']}, {size})")
     elif name == "gpu":
         for gpu in data.get("gpus", []):
             vram = gpu.get("vram_total_mb")

@@ -7,8 +7,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from info_machine.utils.formatting import health_grade
-
 
 def generate_report(
     inspector_results: list[dict[str, Any]],
@@ -117,7 +115,8 @@ def _generate_markdown(data: dict) -> str:
             for key, value in comp_data.items():
                 if isinstance(value, (list, dict)):
                     lines.append(f"**{key}:**")
-                    lines.append(f"```json\n{json.dumps(value, indent=2, default=str)}\n```")
+                    dumped = json.dumps(value, indent=2, default=str)
+                    lines.append(f"```json\n{dumped}\n```")
                 else:
                     lines.append(f"- **{key}:** {value}")
         lines.append("")
@@ -149,8 +148,12 @@ def _generate_html(data: dict) -> str:
 
     # Color based on grade
     grade_colors = {
-        "A": "#22c55e", "B": "#eab308", "C": "#f97316",
-        "D": "#ef4444", "F": "#dc2626", "N/A": "#6b7280",
+        "A": "#22c55e",
+        "B": "#eab308",
+        "C": "#f97316",
+        "D": "#ef4444",
+        "F": "#dc2626",
+        "N/A": "#6b7280",
     }
     grade_color = grade_colors.get(grade, "#6b7280")
 
@@ -169,7 +172,12 @@ def _generate_html(data: dict) -> str:
   }}
   .container {{ max-width: 900px; margin: 0 auto; }}
   h1 {{ color: #38bdf8; font-size: 1.8rem; margin-bottom: 0.5rem; }}
-  h2 {{ color: #7dd3fc; font-size: 1.3rem; margin: 1.5rem 0 0.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }}
+  h2 {{
+    color: #7dd3fc; font-size: 1.3rem;
+    margin: 1.5rem 0 0.5rem;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.5rem;
+  }}
   .timestamp {{ color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }}
   .health-badge {{
     display: inline-flex; align-items: center; gap: 0.75rem;
@@ -179,7 +187,11 @@ def _generate_html(data: dict) -> str:
   .health-score {{ font-size: 2.5rem; font-weight: 700; color: {grade_color}; }}
   .health-grade {{ font-size: 1.2rem; color: {grade_color}; }}
   table {{ width: 100%; border-collapse: collapse; margin: 1rem 0; }}
-  th {{ background: #1e293b; color: #94a3b8; text-align: left; padding: 0.75rem; font-size: 0.85rem; text-transform: uppercase; }}
+  th {{
+    background: #1e293b; color: #94a3b8;
+    text-align: left; padding: 0.75rem;
+    font-size: 0.85rem; text-transform: uppercase;
+  }}
   td {{ padding: 0.75rem; border-bottom: 1px solid #1e293b; }}
   tr:hover {{ background: #1e293b40; }}
   .match {{ color: #22c55e; }}
@@ -214,13 +226,22 @@ def _generate_html(data: dict) -> str:
     # Component health table
     components = health.get("components", {})
     if components:
-        html_parts.append("<h2>Component Health</h2><table><tr><th>Component</th><th>Score</th><th>Grade</th><th>Details</th></tr>")
+        html_parts.append(
+            "<h2>Component Health</h2><table><tr>"
+            "<th>Component</th><th>Score</th>"
+            "<th>Grade</th><th>Details</th></tr>"
+        )
         for name, info in components.items():
             s = info.get("score", -1)
             g = info.get("grade", "N/A")
             gc = grade_colors.get(g, "#6b7280")
             d = info.get("details", "")
-            html_parts.append(f'<tr><td>{name}</td><td style="color:{gc}">{s}%</td><td style="color:{gc}">{g}</td><td>{d}</td></tr>')
+            html_parts.append(
+                f"<tr><td>{name}</td>"
+                f'<td style="color:{gc}">{s}%</td>'
+                f'<td style="color:{gc}">{g}</td>'
+                f"<td>{d}</td></tr>"
+            )
         html_parts.append("</table>")
 
     # Issues
@@ -244,20 +265,46 @@ def _generate_html(data: dict) -> str:
             for key, value in comp_data.items():
                 if isinstance(value, (list, dict)):
                     formatted = json.dumps(value, indent=2, default=str)
-                    html_parts.append(f'<div class="kv"><span class="kv-key">{key}</span><pre class="kv-val" style="white-space:pre-wrap;font-size:0.8rem">{formatted}</pre></div>')
+                    html_parts.append(
+                        f'<div class="kv">'
+                        f'<span class="kv-key">{key}</span>'
+                        f'<pre class="kv-val" '
+                        f'style="white-space:pre-wrap;'
+                        f'font-size:0.8rem">'
+                        f"{formatted}</pre></div>"
+                    )
                 else:
-                    html_parts.append(f'<div class="kv"><span class="kv-key">{key}</span><span class="kv-val">{value}</span></div>')
+                    html_parts.append(
+                        f'<div class="kv">'
+                        f'<span class="kv-key">{key}</span>'
+                        f'<span class="kv-val">{value}'
+                        f"</span></div>"
+                    )
         html_parts.append("</div>")
 
     # Verification
     verification = data.get("verification")
     if verification:
-        html_parts.append("<h2>📋 Spec Verification</h2><table><tr><th>Field</th><th>Claimed</th><th>Actual</th><th>Status</th></tr>")
+        html_parts.append(
+            "<h2>📋 Spec Verification</h2><table><tr>"
+            "<th>Field</th><th>Claimed</th>"
+            "<th>Actual</th><th>Status</th></tr>"
+        )
         for v in verification:
             status = v.get("status", "")
-            css = "match" if status == "match" else "mismatch" if status == "mismatch" else "unknown"
-            icon = "✅" if status == "match" else "⚠️" if status == "mismatch" else "❓"
-            html_parts.append(f'<tr><td>{v["field"]}</td><td>{v["claimed"]}</td><td>{v["actual"]}</td><td class="{css}">{icon} {status}</td></tr>')
+            if status == "match":
+                css, icon = "match", "✅"
+            elif status == "mismatch":
+                css, icon = "mismatch", "⚠️"
+            else:
+                css, icon = "unknown", "❓"
+            html_parts.append(
+                f'<tr><td>{v["field"]}</td>'
+                f'<td>{v["claimed"]}</td>'
+                f'<td>{v["actual"]}</td>'
+                f'<td class="{css}">{icon} {status}'
+                f"</td></tr>"
+            )
         html_parts.append("</table>")
 
     html_parts.append("</div></body></html>")

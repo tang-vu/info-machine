@@ -19,9 +19,7 @@ class TestCpuInspector:
     def test_collect_basic(self, mock_psutil, mock_is_win):
         mock_psutil.cpu_count.side_effect = lambda logical=True: 16 if logical else 8
         mock_psutil.cpu_percent.return_value = 25.0
-        mock_psutil.cpu_freq.return_value = MagicMock(
-            current=3200.0, min=800.0, max=4500.0
-        )
+        mock_psutil.cpu_freq.return_value = MagicMock(current=3200.0, min=800.0, max=4500.0)
         mock_psutil.sensors_temperatures.side_effect = AttributeError
 
         mock_cpuinfo = MagicMock()

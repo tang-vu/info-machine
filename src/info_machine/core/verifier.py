@@ -75,7 +75,7 @@ def load_claims(path: str | Path) -> dict[str, str]:
     if not path.exists():
         raise FileNotFoundError(f"Claims file not found: {path}")
 
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -164,13 +164,19 @@ def _verify_cpu(field: str, claimed: str, data: dict) -> VerificationResult:
         return VerificationResult(field, claimed, actual_model, VerificationResult.MATCH)
     elif actual_model == "Unknown":
         return VerificationResult(
-            field, claimed, actual_model, VerificationResult.CANNOT_VERIFY,
-            note="Could not detect CPU model"
+            field,
+            claimed,
+            actual_model,
+            VerificationResult.CANNOT_VERIFY,
+            note="Could not detect CPU model",
         )
     else:
         return VerificationResult(
-            field, claimed, actual_model, VerificationResult.MISMATCH,
-            note="CPU model does not match seller claim"
+            field,
+            claimed,
+            actual_model,
+            VerificationResult.MISMATCH,
+            note="CPU model does not match seller claim",
         )
 
 
@@ -195,12 +201,18 @@ def _verify_ram(field: str, claimed: str, data: dict) -> VerificationResult:
             return VerificationResult(field, claimed, actual_str, VerificationResult.MATCH)
         else:
             return VerificationResult(
-                field, claimed, actual_str, VerificationResult.MISMATCH,
-                note=f"Expected ~{claimed_gb}GB, found {actual_gb}GB"
+                field,
+                claimed,
+                actual_str,
+                VerificationResult.MISMATCH,
+                note=f"Expected ~{claimed_gb}GB, found {actual_gb}GB",
             )
 
     return VerificationResult(
-        field, claimed, actual_str, VerificationResult.CANNOT_VERIFY,
+        field,
+        claimed,
+        actual_str,
+        VerificationResult.CANNOT_VERIFY,
     )
 
 
@@ -229,8 +241,11 @@ def _verify_storage(field: str, claimed: str, data: dict) -> VerificationResult:
             return VerificationResult(field, claimed, actual_str, VerificationResult.MATCH)
         else:
             return VerificationResult(
-                field, claimed, actual_str, VerificationResult.MISMATCH,
-                note=f"Expected ~{claimed_gb}GB, found ~{total_gb}GB"
+                field,
+                claimed,
+                actual_str,
+                VerificationResult.MISMATCH,
+                note=f"Expected ~{claimed_gb}GB, found ~{total_gb}GB",
             )
 
     return VerificationResult(field, claimed, actual_str, VerificationResult.CANNOT_VERIFY)
@@ -243,7 +258,10 @@ def _verify_gpu(field: str, claimed: str, data: dict) -> VerificationResult:
 
     if not gpus:
         return VerificationResult(
-            field, claimed, "No GPU found", VerificationResult.CANNOT_VERIFY,
+            field,
+            claimed,
+            "No GPU found",
+            VerificationResult.CANNOT_VERIFY,
         )
 
     gpu_names = [g.get("name", "") for g in gpus]
@@ -258,8 +276,11 @@ def _verify_gpu(field: str, claimed: str, data: dict) -> VerificationResult:
             return VerificationResult(field, claimed, actual_str, VerificationResult.MATCH)
 
     return VerificationResult(
-        field, claimed, actual_str, VerificationResult.MISMATCH,
-        note="GPU model does not match seller claim"
+        field,
+        claimed,
+        actual_str,
+        VerificationResult.MISMATCH,
+        note="GPU model does not match seller claim",
     )
 
 
@@ -284,7 +305,10 @@ def _verify_display(field: str, claimed: str, data: dict) -> VerificationResult:
             return VerificationResult(field, claimed, actual_str, VerificationResult.MATCH)
         else:
             return VerificationResult(
-                field, claimed, actual_str, VerificationResult.MISMATCH,
+                field,
+                claimed,
+                actual_str,
+                VerificationResult.MISMATCH,
             )
 
     return VerificationResult(field, claimed, actual_str, VerificationResult.CANNOT_VERIFY)
@@ -296,8 +320,11 @@ def _verify_battery(field: str, claimed: str, data: dict) -> VerificationResult:
 
     if not bat_data.get("present"):
         return VerificationResult(
-            field, claimed, "No battery", VerificationResult.CANNOT_VERIFY,
-            note="No battery detected (desktop PC?)"
+            field,
+            claimed,
+            "No battery",
+            VerificationResult.CANNOT_VERIFY,
+            note="No battery detected (desktop PC?)",
         )
 
     design_cap = bat_data.get("design_capacity_mwh")
@@ -310,10 +337,16 @@ def _verify_battery(field: str, claimed: str, data: dict) -> VerificationResult:
             return VerificationResult(field, claimed, actual_str, VerificationResult.MATCH)
         elif claimed_wh:
             return VerificationResult(
-                field, claimed, actual_str, VerificationResult.MISMATCH,
-                note=f"Expected ~{claimed_wh}Wh, found {actual_wh}Wh"
+                field,
+                claimed,
+                actual_str,
+                VerificationResult.MISMATCH,
+                note=f"Expected ~{claimed_wh}Wh, found {actual_wh}Wh",
             )
 
     return VerificationResult(
-        field, claimed, "Cannot determine capacity", VerificationResult.CANNOT_VERIFY,
+        field,
+        claimed,
+        "Cannot determine capacity",
+        VerificationResult.CANNOT_VERIFY,
     )

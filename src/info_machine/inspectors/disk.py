@@ -8,11 +8,11 @@ import psutil
 
 from info_machine.core.inspector import BaseInspector, registry
 from info_machine.utils.system import (
-    is_windows,
-    wmi_query,
-    safe_int,
     bytes_to_gb,
     bytes_to_readable,
+    is_windows,
+    safe_int,
+    wmi_query,
 )
 
 
@@ -79,10 +79,7 @@ class DiskInspector(BaseInspector):
                     if "SSD" in str(media) or "Solid" in str(media):
                         drive_type = "SSD"
                     elif "HDD" in str(media) or "Fixed" in str(media):
-                        if "NVMe" in str(interface):
-                            drive_type = "NVMe SSD"
-                        else:
-                            drive_type = "HDD"
+                        drive_type = "NVMe SSD" if "NVMe" in str(interface) else "HDD"
 
                     # Try to detect NVMe from model name
                     model = disk.get("Model", "")

@@ -73,10 +73,10 @@ def wmi_query(wmi_class: str, properties: list[str] | None = None) -> list[dict[
                 results.append(item)
 
         return results
-    except ImportError:
-        raise RuntimeError("WMI module not installed. Install with: pip install wmi")
+    except ImportError as exc:
+        raise RuntimeError("WMI module not installed. Install with: pip install wmi") from exc
     except Exception as e:
-        raise RuntimeError(f"WMI query failed for {wmi_class}: {e}")
+        raise RuntimeError(f"WMI query failed for {wmi_class}: {e}") from e
 
 
 def safe_int(value: Any, default: int = 0) -> int:

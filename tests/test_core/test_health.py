@@ -23,8 +23,18 @@ class TestHealthScoring:
     def test_overall_health_mixed(self):
         results = [
             {"name": "cpu", "display_name": "CPU", "health_score": 90, "health_details": "Good"},
-            {"name": "ram", "display_name": "RAM", "health_score": 50, "health_details": "High usage"},
-            {"name": "battery", "display_name": "Battery", "health_score": 30, "health_details": "Degraded"},
+            {
+                "name": "ram",
+                "display_name": "RAM",
+                "health_score": 50,
+                "health_details": "High usage",
+            },
+            {
+                "name": "battery",
+                "display_name": "Battery",
+                "health_score": 30,
+                "health_details": "Degraded",
+            },
         ]
         health = calculate_overall_health(results)
         # (90 + 50 + 30) / 3 = 56.67 ≈ 57
@@ -35,7 +45,12 @@ class TestHealthScoring:
     def test_overall_health_skip_unavailable(self):
         results = [
             {"name": "cpu", "display_name": "CPU", "health_score": 80, "health_details": "OK"},
-            {"name": "battery", "display_name": "Battery", "health_score": -1, "health_details": "N/A"},
+            {
+                "name": "battery",
+                "display_name": "Battery",
+                "health_score": -1,
+                "health_details": "N/A",
+            },
         ]
         health = calculate_overall_health(results)
         assert health["overall_score"] == 80  # Only CPU counted

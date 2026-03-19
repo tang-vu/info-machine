@@ -7,7 +7,7 @@ from typing import Any
 import psutil
 
 from info_machine.core.inspector import BaseInspector, registry
-from info_machine.utils.system import is_windows, wmi_query, bytes_to_readable
+from info_machine.utils.system import bytes_to_readable, is_windows, wmi_query
 
 
 @registry.register
