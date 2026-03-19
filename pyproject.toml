@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "info-machine"
-version = "0.1.0"
+version = "0.2.0"
 description = "🖥️ CLI tool to inspect PC/laptop hardware specs, evaluate component health, and verify seller claims"
 readme = "README.md"
 license = {text = "MIT"}
